@@ -28,22 +28,28 @@ function verLiga(index) {
   const liga = ligas[index];
   const div = document.getElementById('ligas');
 
-  let html = `<h2>Liga: ${liga.nombre}</h2>`;
-  html += `<button onclick="agregarPartido()">Agregar Partido</button>`;
-  html += `<button onclick="mostrarTabla()">Ver Tabla de Posiciones</button>`;
-  html += '<ul>';
+  let html = `<h2>Liga: ${liga.nombre}</h2>
+    <button onclick="eliminarLiga()">Eliminar Liga</button>
+    <button onclick="agregarPartido()">Agregar Partido</button>
+    <button onclick="mostrarTabla()">Ver Tabla de Posiciones</button>
+    <ul>`;
+
   if (liga.partidos.length === 0) {
     html += '<li>No hay partidos aún.</li>';
   } else {
     for (let i = 0; i < liga.partidos.length; i++) {
       const p = liga.partidos[i];
       html += `<li>${p.equipo1} vs ${p.equipo2} - Resultado: ${p.resultado || 'No jugado'} 
-      <button onclick="ponerResultado(${i})">Poner resultado</button></li>`;
+        <button onclick="ponerResultado(${i})">Poner resultado</button>
+        <button onclick="eliminarPartido(${i})">Eliminar</button>
+      </li>`;
     }
   }
-  html += '</ul>';
-  html += `<button onclick="mostrarLigas()">Volver a ligas</button>`;
-  html += `<div id="tabla"></div>`;
+
+  html += `</ul>
+    <button onclick="mostrarLigas()">Volver a ligas</button>
+    <div id="tabla"></div>`;
+
   div.innerHTML = html;
 }
 
@@ -66,26 +72,39 @@ function ponerResultado(partidoIndex) {
   }
 }
 
+function eliminarPartido(index) {
+  if (confirm('¿Seguro quieres eliminar este partido?')) {
+    ligas[ligaSeleccionada].partidos.splice(index, 1);
+    guardarYMostrar();
+    verLiga(ligaSeleccionada);
+  }
+}
+
+function eliminarLiga() {
+  if (confirm('¿Seguro quieres eliminar esta liga?')) {
+    ligas.splice(ligaSeleccionada, 1);
+    guardarYMostrar();
+    mostrarLigas();
+  }
+}
+
 function mostrarTabla() {
   const liga = ligas[ligaSeleccionada];
   const tablaDiv = document.getElementById('tabla');
 
-  // Crear objeto para estadísticas
   let equipos = {};
 
-  // Inicializar equipos
   liga.partidos.forEach(p => {
     if (!equipos[p.equipo1]) equipos[p.equipo1] = crearEstadisticas();
     if (!equipos[p.equipo2]) equipos[p.equipo2] = crearEstadisticas();
   });
 
-  // Procesar resultados
   liga.partidos.forEach(p => {
-    if (!p.resultado) return; // No jugado aún
+    if (!p.resultado) return;
 
     const [goles1, goles2] = p.resultado.split('-').map(x => parseInt(x.trim()));
 
-    if (isNaN(goles1) || isNaN(goles2)) return; // Resultado inválido
+    if (isNaN(goles1) || isNaN(goles2)) return;
 
     equipos[p.equipo1].pj++;
     equipos[p.equipo2].pj++;
@@ -111,17 +130,15 @@ function mostrarTabla() {
     }
   });
 
-  // Convertir a array y ordenar por puntos y diferencia de goles
   let tabla = Object.keys(equipos).map(nombre => {
     let e = equipos[nombre];
     e.nombre = nombre;
-    e.dg = e.gf - e.gc; // diferencia goles
+    e.dg = e.gf - e.gc;
     return e;
   });
 
   tabla.sort((a, b) => b.pts - a.pts || b.dg - a.dg);
 
-  // Construir tabla HTML
   let html = `<h3>Tabla de posiciones</h3>`;
   html += `<table border="1" cellpadding="5" cellspacing="0">
     <tr>
@@ -157,13 +174,13 @@ function mostrarTabla() {
 
 function crearEstadisticas() {
   return {
-    pj: 0, // partidos jugados
-    pg: 0, // partidos ganados
-    pe: 0, // partidos empatados
-    pp: 0, // partidos perdidos
-    gf: 0, // goles a favor
-    gc: 0, // goles en contra
-    pts: 0  // puntos
+    pj: 0,
+    pg: 0,
+    pe: 0,
+    pp: 0,
+    gf: 0,
+    gc: 0,
+    pts: 0
   };
 }
 
