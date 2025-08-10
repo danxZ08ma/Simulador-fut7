@@ -1,11 +1,16 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador FUT7</title>
+</head>
+<body>
+  <h1>Simulador FUT7</h1>
 
-app.get('/', (req, res) => {
-  res.send('¡Servidor funcionando!');
-});
+  <button onclick="crearLiga()">Crear Liga Nueva</button>
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+  <div id="ligas"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
