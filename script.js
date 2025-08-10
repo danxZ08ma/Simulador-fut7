@@ -36,7 +36,9 @@ function verLiga(index) {
   } else {
     for (let i = 0; i < liga.partidos.length; i++) {
       const p = liga.partidos[i];
-      html += `<li>${p.equipo1} vs ${p.equipo2} - Resultado: ${p.resultado || 'No jugado'}</li>`;
+      // Cambiamos para que puedas hacer clic y poner resultado
+      html += `<li>${p.equipo1} vs ${p.equipo2} - Resultado: ${p.resultado || 'No jugado'} 
+      <button onclick="ponerResultado(${i})">Poner resultado</button></li>`;
     }
   }
   html += '</ul>';
@@ -49,6 +51,15 @@ function agregarPartido() {
   const equipo2 = prompt('Nombre equipo 2:');
   if (equipo1 && equipo2) {
     ligas[ligaSeleccionada].partidos.push({ equipo1, equipo2, resultado: null });
+    guardarYMostrar();
+    verLiga(ligaSeleccionada);
+  }
+}
+
+function ponerResultado(partidoIndex) {
+  const resultado = prompt('Escribe el resultado (ejemplo: 3-1):');
+  if (resultado) {
+    ligas[ligaSeleccionada].partidos[partidoIndex].resultado = resultado;
     guardarYMostrar();
     verLiga(ligaSeleccionada);
   }
