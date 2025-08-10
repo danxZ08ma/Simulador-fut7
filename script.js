@@ -1,4 +1,5 @@
 let ligas = JSON.parse(localStorage.getItem('ligas')) || [];
+let ligaSeleccionada = null;
 
 function mostrarLigas() {
   const div = document.getElementById('ligas');
@@ -7,8 +8,8 @@ function mostrarLigas() {
     return;
   }
   let html = '<ul>';
-  for (const liga of ligas) {
-    html += `<li>${liga.nombre}</li>`;
+  for (let i = 0; i < ligas.length; i++) {
+    html += `<li><a href="#" onclick="verLiga(${i})">${ligas[i].nombre}</a></li>`;
   }
   html += '</ul>';
   div.innerHTML = html;
@@ -18,9 +19,45 @@ function crearLiga() {
   const nombre = prompt('Nombre de la liga:');
   if (nombre) {
     ligas.push({ nombre: nombre, partidos: [] });
-    localStorage.setItem('ligas', JSON.stringify(ligas));
-    mostrarLigas();
+    guardarYMostrar();
   }
 }
 
+function verLiga(index) {
+  ligaSeleccionada = index;
+  const liga = ligas[index];
+  const div = document.getElementById('ligas');
+
+  let html = `<h2>Liga: ${liga.nombre}</h2>`;
+  html += `<button onclick="agregarPartido()">Agregar Partido</button>`;
+  html += '<ul>';
+  if (liga.partidos.length === 0) {
+    html += '<li>No hay partidos aún.</li>';
+  } else {
+    for (let i = 0; i < liga.partidos.length; i++) {
+      const p = liga.partidos[i];
+      html += `<li>${p.equipo1} vs ${p.equipo2} - Resultado: ${p.resultado || 'No jugado'}</li>`;
+    }
+  }
+  html += '</ul>';
+  html += `<button onclick="mostrarLigas()">Volver a ligas</button>`;
+  div.innerHTML = html;
+}
+
+function agregarPartido() {
+  const equipo1 = prompt('Nombre equipo 1:');
+  const equipo2 = prompt('Nombre equipo 2:');
+  if (equipo1 && equipo2) {
+    ligas[ligaSeleccionada].partidos.push({ equipo1, equipo2, resultado: null });
+    guardarYMostrar();
+    verLiga(ligaSeleccionada);
+  }
+}
+
+function guardarYMostrar() {
+  localStorage.setItem('ligas', JSON.stringify(ligas));
+  mostrarLigas();
+}
+
+// Mostrar ligas al cargar
 mostrarLigas();
